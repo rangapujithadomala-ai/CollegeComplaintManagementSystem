@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registration Error</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="form-card" style="text-align: center;">
+
+        <h1>Registration Error</h1>
+
+        <p style="color: #dc2626; margin: 20px 0;">
+            {{ message }}
+        </p>
+
+        <a href="/student-register">
+            <button>Back to Registration</button>
+        </a>
+
+    </div>
+<script src="{{ url_for('static', filename='theme.js') }}"></script>
+</body>
+</html>

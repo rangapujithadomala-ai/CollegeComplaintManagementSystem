@@ -1,0 +1,233 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Complaints</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .dashboard-header h1 {
+            margin-bottom: 8px;
+        }
+
+        .dashboard-home-button {
+            display: inline-block;
+            padding: 11px 18px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .dashboard-home-button:hover {
+            background: #1d4ed8;
+        }
+
+        .details-header {
+            margin-bottom: 18px;
+        }
+
+        body.dark .dashboard-home-button,
+        body.dark-mode .dashboard-home-button {
+            background: #2563eb;
+            color: white;
+        }
+
+        @media (max-width: 600px) {
+            .dashboard-header {
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Page heading and single Back button -->
+    <div class="dashboard-header">
+        <div>
+            <h1>My Complaints</h1>
+            <p>View your complaints and track their progress.</p>
+        </div>
+
+        <a href="{{ url_for('student_dashboard') }}"
+           class="dashboard-home-button">
+            &#8592; Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Complaint Categories -->
+    <div class="complaint-categories">
+
+        <a href="#pending" class="category-card pending-category">
+            <div class="category-icon">!</div>
+            <div class="category-info">
+                <h2>Pending</h2>
+                <p>Waiting for review</p>
+            </div>
+            <div class="category-count">
+                {{ complaints | selectattr("3", "equalto", "Pending") | list | length }}
+            </div>
+        </a>
+
+        <a href="#progress" class="category-card progress-category">
+            <div class="category-icon">&#8635;</div>
+            <div class="category-info">
+                <h2>In Progress</h2>
+                <p>Currently being handled</p>
+            </div>
+            <div class="category-count">
+                {{ complaints | selectattr("3", "equalto", "In Progress") | list | length }}
+            </div>
+        </a>
+
+        <a href="#resolved" class="category-card resolved-category">
+            <div class="category-icon">&#10003;</div>
+            <div class="category-info">
+                <h2>Resolved</h2>
+                <p>Successfully completed</p>
+            </div>
+            <div class="category-count">
+                {{ complaints | selectattr("3", "equalto", "Resolved") | list | length }}
+            </div>
+        </a>
+
+    </div>
+
+    <!-- Pending Complaints -->
+    <div id="pending" class="complaint-details">
+
+        <div class="details-header">
+            <h2>Pending Complaints</h2>
+        </div>
+
+        {% set found = namespace(value=false) %}
+
+        {% for complaint in complaints %}
+            {% if complaint[3] == "Pending" %}
+                {% set found.value = true %}
+
+                <div class="complaint-card">
+                    <div class="complaint-top">
+                        <h3>{{ complaint[1] }}</h3>
+                        <span class="status status-pending">Pending</span>
+                    </div>
+
+                    <p class="complaint-category">
+                        <strong>Category:</strong>
+                        {{ complaint[5] or "Not specified" }}
+                    </p>
+
+                    <p>{{ complaint[2] }}</p>
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        {% if not found.value %}
+            <div class="empty-status-card">
+                <p>No pending complaints.</p>
+            </div>
+        {% endif %}
+
+    </div>
+
+    <!-- In Progress Complaints -->
+    <div id="progress" class="complaint-details">
+
+        <div class="details-header">
+            <h2>In Progress Complaints</h2>
+        </div>
+
+        {% set found = namespace(value=false) %}
+
+        {% for complaint in complaints %}
+            {% if complaint[3] == "In Progress" %}
+                {% set found.value = true %}
+
+                <div class="complaint-card">
+                    <div class="complaint-top">
+                        <h3>{{ complaint[1] }}</h3>
+                        <span class="status status-progress">In Progress</span>
+                    </div>
+
+                    <p class="complaint-category">
+                        <strong>Category:</strong>
+                        {{ complaint[5] or "Not specified" }}
+                    </p>
+
+                    <p>{{ complaint[2] }}</p>
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        {% if not found.value %}
+            <div class="empty-status-card">
+                <p>No complaints are currently in progress.</p>
+            </div>
+        {% endif %}
+
+    </div>
+
+    <!-- Resolved Complaints -->
+    <div id="resolved" class="complaint-details">
+
+        <div class="details-header">
+            <h2>Resolved Complaints</h2>
+        </div>
+
+        {% set found = namespace(value=false) %}
+
+        {% for complaint in complaints %}
+            {% if complaint[3] == "Resolved" %}
+                {% set found.value = true %}
+
+                <div class="complaint-card">
+                    <div class="complaint-top">
+                        <h3>{{ complaint[1] }}</h3>
+                        <span class="status status-resolved">Resolved</span>
+                    </div>
+
+                    <p class="complaint-category">
+                        <strong>Category:</strong>
+                        {{ complaint[5] or "Not specified" }}
+                    </p>
+
+                    <p>{{ complaint[2] }}</p>
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        {% if not found.value %}
+            <div class="empty-status-card">
+                <p>No resolved complaints yet.</p>
+            </div>
+        {% endif %}
+
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='theme.js') }}"></script>
+
+</body>
+</html>

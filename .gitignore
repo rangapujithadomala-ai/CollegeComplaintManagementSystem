@@ -1,0 +1,8 @@
+
+venv/
+.venv/
+__pycache__/
+*.pyc
+college_complaints.db
+college_complaints_backup.db
+.env

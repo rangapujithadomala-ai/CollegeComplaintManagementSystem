@@ -1,0 +1,103 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Submit Complaint</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="form-card">
+
+    <h1>Submit a Complaint</h1>
+
+    <p style="color: #64748b; margin-bottom: 24px;">
+        Please provide the details of your college-related issue.
+    </p>
+
+    <form method="POST">
+
+        <label for="category">Complaint Category</label>
+
+        <select name="category" id="category" required>
+            <option value="">Select a category</option>
+            <option value="Hostel">Hostel</option>
+            <option value="Transport">Transport</option>
+            <option value="Classroom">Classroom</option>
+            <option value="Infrastructure">Infrastructure</option>
+            <option value="Academics">Academics</option>
+            <option value="Other">Other</option>
+        </select>
+
+        <div id="other-category-box" style="display: none;">
+            <label for="other_category">Specify Other Category</label>
+
+            <input
+                type="text"
+                name="other_category"
+                id="other_category"
+                placeholder="Enter your complaint category"
+            >
+        </div>
+
+        <label for="title">Complaint Title</label>
+
+        <input
+            type="text"
+            name="title"
+            id="title"
+            placeholder="Enter a short title"
+            required
+        >
+
+        <label for="description">Complaint Description</label>
+
+        <textarea
+            name="description"
+            id="description"
+            rows="5"
+            placeholder="Explain your complaint clearly"
+            required
+        ></textarea>
+
+        <button type="submit">Submit Complaint</button>
+
+    </form>
+
+    <p style="text-align: center; margin-top: 20px;">
+        <a href="{{ url_for('student_dashboard') }}"
+           style="color: #64748b;">
+            ← Back to Dashboard
+        </a>
+    </p>
+
+</div>
+
+<script>
+const category = document.getElementById("category");
+const otherBox = document.getElementById("other-category-box");
+const otherInput = document.getElementById("other_category");
+
+function updateOtherCategory() {
+    const isOther = category.value === "Other";
+
+    otherBox.style.display = isOther ? "block" : "none";
+    otherInput.required = isOther;
+
+    if (!isOther) {
+        otherInput.value = "";
+    }
+}
+
+category.addEventListener("change", updateOtherCategory);
+updateOtherCategory();
+</script>
+<script src="{{ url_for('static', filename='theme.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Admin Login</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+
+<body>
+
+
+<div class="form-card admin-login-card">
+
+
+    <!-- Admin Icon -->
+
+    <div class="admin-login-icon">
+        🔐
+    </div>
+
+
+    <h1>Admin Login</h1>
+
+    <p class="admin-login-subtitle">
+        Authorized administration access only
+    </p>
+
+
+    <form method="POST">
+
+
+        <!-- Username -->
+
+        <label>Admin Username</label>
+
+        <input
+            type="text"
+            name="username"
+            placeholder="Enter admin username"
+            required
+        >
+
+
+        <!-- Password -->
+
+        <label>Password</label>
+
+        <div class="password-box">
+
+            <input
+                type="password"
+                id="admin_password"
+                name="password"
+                placeholder="Enter admin password"
+                required
+            >
+
+            <button
+                type="button"
+                class="toggle-password"
+                onclick="toggleAdminPassword()"
+            >
+                Show
+            </button>
+
+        </div>
+
+
+        <!-- Security Notice -->
+
+        <div class="admin-security-note">
+
+            <strong>🔒 Secure Access</strong>
+
+            <p>
+                This section is restricted to authorized
+                college administrators.
+            </p>
+
+        </div>
+
+
+        <button type="submit">
+            Login to Admin Dashboard
+        </button>
+
+
+    </form>
+
+
+    <!-- Back -->
+
+    <p style="text-align: center; margin-top: 20px;">
+
+        <a href="/" style="color: #64748b;">
+            ← Back to Home
+        </a>
+
+    </p>
+
+
+</div>
+
+
+<script>
+
+function toggleAdminPassword() {
+
+    const password =
+        document.getElementById("admin_password");
+
+    const button =
+        document.querySelector(".toggle-password");
+
+
+    if (password.type === "password") {
+
+        password.type = "text";
+
+        button.textContent = "Hide";
+
+    } else {
+
+        password.type = "password";
+
+        button.textContent = "Show";
+
+    }
+
+}
+
+</script>
+
+<script src="{{ url_for('static', filename='theme.js') }}"></script>
+</body>
+
+</html>

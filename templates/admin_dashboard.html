@@ -1,0 +1,682 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6fa;
+            color: #263238;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        header {
+            background: #173b68;
+            color: white;
+            padding: 22px 6%;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 23px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1150px;
+            margin: 30px auto;
+            padding-bottom: 90px;
+        }
+
+        .welcome {
+            margin-bottom: 25px;
+        }
+
+        .welcome h2 {
+            margin-bottom: 8px;
+        }
+
+        .welcome p {
+            color: #657080;
+        }
+
+        /* Back button */
+        .back-button {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 18px;
+            border-radius: 7px;
+            background: #173b68;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-button:hover {
+            background: #24558f;
+        }
+
+        /* Complaint category cards */
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .category {
+            display: block;
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #263238;
+            border: 1px solid #e3e8ef;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+            transition: background 0.3s, color 0.3s, transform 0.2s;
+        }
+
+        .category:hover,
+        .category.active {
+            border-color: #527eb5;
+            transform: translateY(-2px);
+        }
+
+        .category h3 {
+            margin: 0 0 12px;
+            font-size: 16px;
+            color: #263238;
+        }
+
+        .count {
+            font-size: 28px;
+            font-weight: bold;
+            color: #173b68;
+        }
+
+        /* Complaint sections */
+        .section {
+            display: none;
+            background: white;
+            color: #263238;
+            padding: 24px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            border: 1px solid #e3e8ef;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* Individual complaint */
+        .complaint {
+            border: 1px solid #e1e6ed;
+            border-radius: 9px;
+            padding: 18px;
+            margin-top: 16px;
+            background: #ffffff;
+            color: #263238;
+            overflow-wrap: anywhere;
+        }
+
+        .complaint h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .complaint p {
+            line-height: 1.6;
+        }
+
+        /* Status labels */
+        .status {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            background: #fff0cf;
+            color: #805600;
+        }
+
+        .status-in-progress {
+            background: #dcecff;
+            color: #174d8c;
+        }
+
+        .status-resolved {
+            background: #d9f5e4;
+            color: #17663a;
+        }
+
+        .status-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Status update form */
+        .status-form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .status-form select,
+        .status-form button {
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .status-form select {
+            border: 1px solid #ccd4df;
+            background: white;
+            color: #263238;
+        }
+
+        .update-button {
+            border: none;
+            background: #173b68;
+            color: white;
+            cursor: pointer;
+        }
+
+        .update-button:hover {
+            background: #24558f;
+        }
+
+        .empty {
+            color: #6c7685;
+            padding: 12px 0;
+        }
+
+        /* Appearance control only */
+        .appearance-button {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            padding: 12px 18px;
+            border: 1px solid #d5deeb;
+            border-radius: 25px;
+            background: white;
+            color: #173b68;
+            cursor: pointer;
+            z-index: 1001;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.16);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .appearance-button:hover {
+            background: #e8effa;
+        }
+
+        /* Dark mode */
+        body.dark {
+            background: #111827;
+            color: #f3f4f6;
+        }
+
+        body.dark header {
+            background: #0b1220;
+            color: white;
+        }
+
+        body.dark .welcome h2,
+        body.dark .welcome p {
+            color: #f3f4f6;
+        }
+
+        body.dark .category {
+            background: #1f2937;
+            color: #f3f4f6;
+            border-color: #374151;
+        }
+
+        body.dark .category:hover,
+        body.dark .category.active {
+            background: #273449;
+            border-color: #60a5fa;
+        }
+
+        body.dark .category h3 {
+            color: #f3f4f6;
+        }
+
+        body.dark .count {
+            color: #93c5fd;
+        }
+
+        body.dark .section {
+            background: #1f2937;
+            color: #f3f4f6;
+            border-color: #374151;
+        }
+
+        body.dark .section h2,
+        body.dark .section h3,
+        body.dark .section strong {
+            color: #f3f4f6;
+        }
+
+        body.dark .complaint {
+            background: #111827;
+            color: #f3f4f6;
+            border-color: #374151;
+        }
+
+        body.dark .complaint h3,
+        body.dark .complaint p,
+        body.dark .complaint strong {
+            color: #f3f4f6;
+        }
+
+        body.dark .status {
+            background: #59451e;
+            color: #fde68a;
+        }
+
+        body.dark .status-in-progress {
+            background: #1e3a5f;
+            color: #bfdbfe;
+        }
+
+        body.dark .status-resolved {
+            background: #14532d;
+            color: #bbf7d0;
+        }
+
+        body.dark .status-rejected {
+            background: #7f1d1d;
+            color: #fecaca;
+        }
+
+        body.dark .status-form select {
+            background: #1f2937;
+            color: #f9fafb;
+            border-color: #4b5563;
+        }
+
+        body.dark .status-form select option {
+            background: #1f2937;
+            color: #f9fafb;
+        }
+
+        body.dark .empty {
+            color: #d1d5db;
+        }
+
+        body.dark .back-button {
+            background: #374151;
+            color: white;
+        }
+
+        body.dark .back-button:hover {
+            background: #4b5563;
+        }
+
+        body.dark .appearance-button {
+            background: #1f2937;
+            color: #f9fafb;
+            border-color: #4b5563;
+        }
+
+        body.dark .appearance-button:hover {
+            background: #374151;
+        }
+
+        @media (max-width: 600px) {
+            header {
+                padding: 18px 5%;
+            }
+
+            header h1 {
+                font-size: 20px;
+            }
+
+            .container {
+                width: 92%;
+            }
+
+            .section {
+                padding: 16px;
+            }
+
+            .appearance-button {
+                right: 15px;
+                bottom: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Admin Dashboard</h1>
+</header>
+
+<main class="container">
+
+    <div class="welcome">
+        <h2>Welcome, Admin!</h2>
+        <p>View student complaints and update their status.</p>
+
+        <a class="back-button"
+           href="{{ url_for('admin_login') }}">
+            ← Back
+        </a>
+    </div>
+
+    {% set pending_count = complaints | selectattr(3, 'equalto', 'Pending') | list | length %}
+    {% set progress_count = complaints | selectattr(3, 'equalto', 'In Progress') | list | length %}
+    {% set resolved_count = complaints | selectattr(3, 'equalto', 'Resolved') | list | length %}
+
+    <!-- Complaint category cards -->
+    <div class="categories">
+
+        <a href="#all" class="category active" data-section="all">
+            <h3>All Complaints</h3>
+            <div class="count">{{ complaints | length }}</div>
+        </a>
+
+        <a href="#pending" class="category" data-section="pending">
+            <h3>Pending</h3>
+            <div class="count">{{ pending_count }}</div>
+        </a>
+
+        <a href="#progress" class="category" data-section="progress">
+            <h3>In Progress</h3>
+            <div class="count">{{ progress_count }}</div>
+        </a>
+
+        <a href="#resolved" class="category" data-section="resolved">
+            <h3>Resolved</h3>
+            <div class="count">{{ resolved_count }}</div>
+        </a>
+
+    </div>
+
+    <!-- All complaints -->
+    <section class="section active" id="all">
+        <h2>All Complaints</h2>
+
+        {% if complaints %}
+            {% for complaint in complaints %}
+                <article class="complaint">
+                    <h3>{{ complaint[1] }}</h3>
+
+                    <p><strong>Complaint ID:</strong> {{ complaint[0] }}</p>
+                    <p><strong>Category:</strong> {{ complaint[5] or "Not specified" }}</p>
+                    <p><strong>Description:</strong> {{ complaint[2] }}</p>
+
+                    <p>
+                        <strong>Status:</strong>
+
+                        <span class="status
+                            {% if complaint[3] == 'In Progress' %}status-in-progress
+                            {% elif complaint[3] == 'Resolved' %}status-resolved
+                            {% elif complaint[3] == 'Rejected' %}status-rejected
+                            {% endif %}">
+                            {{ complaint[3] or "Pending" }}
+                        </span>
+                    </p>
+
+                    <form class="status-form"
+                          action="{{ url_for('update_status', complaint_id=complaint[0]) }}"
+                          method="POST">
+
+                        <select name="status" required>
+                            <option value="Pending"
+                                {% if complaint[3] == 'Pending' %}selected{% endif %}>
+                                Pending
+                            </option>
+
+                            <option value="In Progress"
+                                {% if complaint[3] == 'In Progress' %}selected{% endif %}>
+                                In Progress
+                            </option>
+
+                            <option value="Resolved"
+                                {% if complaint[3] == 'Resolved' %}selected{% endif %}>
+                                Resolved
+                            </option>
+
+                            <option value="Rejected"
+                                {% if complaint[3] == 'Rejected' %}selected{% endif %}>
+                                Rejected
+                            </option>
+                        </select>
+
+                        <button class="update-button" type="submit">
+                            Update Status
+                        </button>
+                    </form>
+                </article>
+            {% endfor %}
+        {% else %}
+            <p class="empty">No complaints have been submitted yet.</p>
+        {% endif %}
+    </section>
+
+    <!-- Pending complaints -->
+    <section class="section" id="pending">
+        <h2>Pending Complaints</h2>
+
+        {% set ns = namespace(found=false) %}
+
+        {% for complaint in complaints %}
+            {% if complaint[3] == 'Pending' %}
+                {% set ns.found = true %}
+
+                <article class="complaint">
+                    <h3>{{ complaint[1] }}</h3>
+                    <p><strong>Complaint ID:</strong> {{ complaint[0] }}</p>
+                    <p><strong>Category:</strong> {{ complaint[5] or "Not specified" }}</p>
+                    <p><strong>Description:</strong> {{ complaint[2] }}</p>
+                    <p><strong>Status:</strong> <span class="status">Pending</span></p>
+
+                    <form class="status-form"
+                          action="{{ url_for('update_status', complaint_id=complaint[0]) }}"
+                          method="POST">
+                        <select name="status" required>
+                            <option value="Pending" selected>Pending</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Resolved">Resolved</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+
+                        <button class="update-button" type="submit">
+                            Update Status
+                        </button>
+                    </form>
+                </article>
+            {% endif %}
+        {% endfor %}
+
+        {% if not ns.found %}
+            <p class="empty">No pending complaints.</p>
+        {% endif %}
+    </section>
+
+    <!-- In progress complaints -->
+    <section class="section" id="progress">
+        <h2>In Progress Complaints</h2>
+
+        {% set ns = namespace(found=false) %}
+
+        {% for complaint in complaints %}
+            {% if complaint[3] == 'In Progress' %}
+                {% set ns.found = true %}
+
+                <article class="complaint">
+                    <h3>{{ complaint[1] }}</h3>
+                    <p><strong>Complaint ID:</strong> {{ complaint[0] }}</p>
+                    <p><strong>Category:</strong> {{ complaint[5] or "Not specified" }}</p>
+                    <p><strong>Description:</strong> {{ complaint[2] }}</p>
+                    <p>
+                        <strong>Status:</strong>
+                        <span class="status status-in-progress">In Progress</span>
+                    </p>
+
+                    <form class="status-form"
+                          action="{{ url_for('update_status', complaint_id=complaint[0]) }}"
+                          method="POST">
+                        <select name="status" required>
+                            <option value="Pending">Pending</option>
+                            <option value="In Progress" selected>In Progress</option>
+                            <option value="Resolved">Resolved</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+
+                        <button class="update-button" type="submit">
+                            Update Status
+                        </button>
+                    </form>
+                </article>
+            {% endif %}
+        {% endfor %}
+
+        {% if not ns.found %}
+            <p class="empty">No complaints are currently in progress.</p>
+        {% endif %}
+    </section>
+
+    <!-- Resolved complaints -->
+    <section class="section" id="resolved">
+        <h2>Resolved Complaints</h2>
+
+        {% set ns = namespace(found=false) %}
+
+        {% for complaint in complaints %}
+            {% if complaint[3] == 'Resolved' %}
+                {% set ns.found = true %}
+
+                <article class="complaint">
+                    <h3>{{ complaint[1] }}</h3>
+                    <p><strong>Complaint ID:</strong> {{ complaint[0] }}</p>
+                    <p><strong>Category:</strong> {{ complaint[5] or "Not specified" }}</p>
+                    <p><strong>Description:</strong> {{ complaint[2] }}</p>
+                    <p>
+                        <strong>Status:</strong>
+                        <span class="status status-resolved">Resolved</span>
+                    </p>
+
+                    <form class="status-form"
+                          action="{{ url_for('update_status', complaint_id=complaint[0]) }}"
+                          method="POST">
+                        <select name="status" required>
+                            <option value="Pending">Pending</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Resolved" selected>Resolved</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+
+                        <button class="update-button" type="submit">
+                            Update Status
+                        </button>
+                    </form>
+                </article>
+            {% endif %}
+        {% endfor %}
+
+        {% if not ns.found %}
+            <p class="empty">No resolved complaints yet.</p>
+        {% endif %}
+    </section>
+
+</main>
+
+<!-- Appearance toggle: bottom-right only -->
+<button type="button"
+        class="appearance-button"
+        id="appearance-toggle">
+    Appearance: Light Mode
+</button>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const themeButton = document.getElementById("appearance-toggle");
+    const categories = document.querySelectorAll(".category");
+    const sections = document.querySelectorAll(".section");
+
+    // Use an admin-specific theme setting.
+    const savedTheme = localStorage.getItem("adminDashboardTheme");
+
+    if (savedTheme === "dark") {
+        document.body.classList.add("dark");
+    }
+
+    function updateThemeButton() {
+        themeButton.textContent =
+            document.body.classList.contains("dark")
+                ? "Appearance: Dark Mode"
+                : "Appearance: Light Mode";
+    }
+
+    updateThemeButton();
+
+    themeButton.addEventListener("click", function () {
+        document.body.classList.toggle("dark");
+
+        localStorage.setItem(
+            "adminDashboardTheme",
+            document.body.classList.contains("dark") ? "dark" : "light"
+        );
+
+        updateThemeButton();
+    });
+
+    // Show the selected complaint category.
+    function showSection(sectionId) {
+        const validIds = ["all", "pending", "progress", "resolved"];
+
+        if (!validIds.includes(sectionId)) {
+            sectionId = "all";
+        }
+
+        sections.forEach(function (section) {
+            section.classList.toggle("active", section.id === sectionId);
+        });
+
+        categories.forEach(function (category) {
+            category.classList.toggle(
+                "active",
+                category.dataset.section === sectionId
+            );
+        });
+    }
+
+    categories.forEach(function (category) {
+        category.addEventListener("click", function (event) {
+            event.preventDefault();
+
+            const sectionId = category.dataset.section;
+            showSection(sectionId);
+
+            history.replaceState(null, "", "#" + sectionId);
+        });
+    });
+
+    const initialSection = window.location.hash.replace("#", "");
+    showSection(initialSection || "all");
+});
+</script>
+
+</body>
+</html>

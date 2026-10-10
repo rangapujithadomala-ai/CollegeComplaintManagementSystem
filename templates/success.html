@@ -1,0 +1,79 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Success | College Complaint Management System</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="form-card success-card">
+
+    <div class="success-icon">✓</div>
+
+    {% set page_type = success_type|default('registration') %}
+
+    {% if page_type == 'complaint' %}
+
+        <h1>Complaint Submitted Successfully</h1>
+
+        <p class="success-message">
+            Your complaint has been submitted successfully.
+            You can track its status from your
+            <strong>My Complaints</strong> section.
+        </p>
+
+        <div class="success-buttons">
+            <a href="{{ url_for('student_dashboard') }}">
+                <button type="button">
+                    Back to Dashboard
+                </button>
+            </a>
+        </div>
+
+    {% elif page_type == 'password_reset' %}
+
+        <h1>Password Reset Successful</h1>
+
+        <p class="success-message">
+            Your password has been changed successfully.
+            You can now log in using your new password.
+        </p>
+
+        <div class="success-buttons">
+            <a href="{{ url_for('student_login') }}">
+                <button type="button">
+                    Back to Login
+                </button>
+            </a>
+        </div>
+
+    {% else %}
+
+        <h1>Registration Successful</h1>
+
+        <p class="success-message">
+            Your student account has been created successfully.
+            You can now log in using your registered email and password.
+        </p>
+
+        <div class="success-buttons">
+            <a href="{{ url_for('student_login') }}">
+                <button type="button">
+                    Back to Login
+                </button>
+            </a>
+        </div>
+
+    {% endif %}
+
+</div>
+<script src="{{ url_for('static', filename='theme.js') }}"></script>
+</body>
+</html>
