@@ -502,6 +502,9 @@ def logout():
 
 # -------------------- RUN APPLICATION --------------------
 
+# Initialize database tables when the app starts
+init_db()
+
 if __name__ == "__main__":
-    init_db()
     app.run(debug=False, port=5001)
+
